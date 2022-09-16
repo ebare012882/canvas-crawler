@@ -12,7 +12,10 @@
 // the hero and ogre should be able to collide to make something happen
 // when the hero and ogre collide, 
 
+
 // make wire frame outline... (to display what I want to do with my game)
+
+
 
 // first: grab our elements and store it in a variable so we cna do stuff
 
@@ -108,7 +111,7 @@ class Crawler {
         // we can even set methods inside the constructor
         this.render = function () {
             ctx.fillStyle = this.color
-            ctx.fillRect(this.y, this.y, this.width, this.height)
+            ctx.fillRect(this.x, this.y, this.width, this.height)
         }
     }
 }
@@ -118,3 +121,100 @@ let ogre = new Crawler(200, 50, '#bada55', 32, 48)
 
 player.render()
 ogre.render()
+
+// now we're going to set up our movement handler function
+// this will tell our code how our player moves around and what keys to use to move them
+// this function has to be tied to an event handler
+// 'e' represents our "event"
+
+const movementHandler = (e) => {
+    // this move handler will be associated with a keydown event
+    // wer're going to use keycodes to tell it to do different movements for different keys
+    // here are some keyCodes:
+    // w = 87, a = 65, s = 83, d = 68
+    // up = 38, left = 37, down = 40, right = 39
+    // those numbers correspond to the keys on the keyboard that will be pressed.
+    // we COULD use if statements for this, but there is another syntax that's a little bit shorter called a switch case
+    switch (e.keyCode) {
+        // we can use multiple cases here for multiple keys to trigger the same event
+        // move up
+        case (87):
+        case (38):
+            // this will move the character up 10px every press
+            player.y -= 10
+            // we also need to break our cases like this
+            break
+        // move left
+        case (65):
+        case (37):
+            // this moves the player left
+            player.x -= 10
+            break
+        // move down
+        case (83):
+        case (40):
+            // this will move the player down
+            player.y += 10
+            break
+        // move right
+        case (68):
+        case (39):
+            // this will move the player right
+            player.x += 10
+            break
+    }
+}
+
+// here's the function we'll use to detect collision betwen entitites
+// to accurately detect a hit, we need to account for the entire space take up by eah object
+// so we need to use the hero's x, y, width, and height as well as shrek's x, y, width, and height
+const detectHit = () => {
+    // we're basically using one big if statement to cover all our bases
+    // that means judging the player and ogre's x, y, w, h values
+    // I GOT LOST IN THE CODE BELOW. WOULD NOT BE ABLE TO RECREATE IT ON MY OWN YET
+    if(player.x < ogre.x + ogre.width
+        && player.x + player.width > ogre.x
+        && player.y < ogre.y + ogre.height
+        && player.y + player.height > ogre.y) {
+            // console.log("we have a hit!")
+            ogre.alive = false
+            message.textContent = 'You win!'
+        }
+}
+
+
+
+// we're going to set up a game loop function
+// this will be attahed to an interval
+// this is how we will create animation in our canvas
+
+// below is an arrow function
+const gameLoop =  () => {
+    // make sure you don't have any console.logs in here
+// here we'll use another built in canvas metho
+// this in called clearRect, and it clears rectangles just like fillRect fill rectangles
+
+    if (ogre.alive) {
+        detectHit()
+    }
+
+// here, we want to clear out the ENTIRE canvas every single frame
+    ctx.clearRect(0, 0, game.width, game.height)
+
+    movement.textContent = player.x + ", " + player.y
+    player.render()
+
+    if(ogre.alive) {
+        ogre.render()
+    }
+}
+
+// now, we're going to attach our movement handler to the keydown event, and we're going to run the gameLoop and we want to make sure to only do this once all of the DOm content has loaded
+
+document.addEventListener('DOMContentLoaded', function (){
+    // once the DOM content loads, we can set up our movement event listener
+    document.addEventListener('keydown', movementHandler)
+    // we can also set up our gameLoop interval
+    setInterval(gameLoop, 60)
+})
+
